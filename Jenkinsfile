@@ -2,6 +2,11 @@
 pipeline {
     agent any
 
+    tools {
+        jdk 'JDK25'
+        maven 'Maven3'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -9,28 +14,32 @@ pipeline {
             }
         }
 
-        stage('Verify Python') {
+        stage('Check Java and Maven') {
             steps {
-                sh 'python3 --version'
+                sh 'java -version'
+                sh 'mvn -version'
             }
         }
 
-        stage('Test Student Registration Form') {
+        stage('Run Automated Tests') {
             steps {
-                sh 'python3 -m unittest -v test_form.py'
+                sh 'mvn test'
             }
         }
     }
 
     post {
+        always {
+            junit allowEmptyResults: false,
+                  testResults: 'target/surefire-reports/*.xml'
+        }
+
         success {
             echo 'SUCCESS: All registration form tests passed.'
         }
+
         failure {
-            echo 'FAILURE: The pipeline or automated tests failed.'
-        }
-        always {
-            echo 'Pipeline execution completed.'
+            echo 'FAILURE: Check the console output and test reports.'
         }
     }
 }
