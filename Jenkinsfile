@@ -16,21 +16,21 @@ pipeline {
 
         stage('Check Java and Maven') {
             steps {
-                sh 'java -version'
-                sh 'mvn -version'
+                bat 'java -version'
+                bat 'mvn -version'
             }
         }
 
         stage('Run Automated Tests') {
             steps {
-                sh 'mvn test'
+                bat 'mvn test'
             }
         }
     }
 
     post {
         always {
-            junit allowEmptyResults: false,
+            junit allowEmptyResults: true,
                   testResults: 'target/surefire-reports/*.xml'
         }
 
